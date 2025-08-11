@@ -637,7 +637,7 @@
                 likeCountElement.textContent = data.likes;
             } catch (error) {
                 console.error('Error loading likes:', error);
-                likeCountElement.textContent = '42'; // Fallback
+                likeCountElement.textContent = '0'; // Fallback
             }
         }
         
@@ -661,7 +661,7 @@
             } catch (error) {
                 console.error('Error incrementing likes:', error);
                 // Fallback to local increment
-                const currentCount = parseInt(likeCountElement.textContent) || 42;
+                const currentCount = parseInt(likeCountElement.textContent) || 0;
                 likeCountElement.textContent = currentCount + 1;
                 
                 heartBtn.classList.add('clicked');
