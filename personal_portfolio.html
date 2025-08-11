@@ -546,7 +546,7 @@
         <!-- Like Counter -->
         <div class="like-counter fade-in-delay-4">
             <span class="heart" id="heartBtn">❤️</span>
-            <span id="likeCount">42</span>
+            <span id="likeCount">Loading...</span>
         </div>
 
         <footer class="footer fade-in-delay-4">
@@ -632,20 +632,57 @@
         // Start typing effect
         typeEffect();
         
-        // Like counter
-        let likeCount = 42;
+        // Like counter with Vercel KV integration
         const heartBtn = document.getElementById('heartBtn');
         const likeCountElement = document.getElementById('likeCount');
         
-        heartBtn.addEventListener('click', function() {
-            likeCount++;
-            likeCountElement.textContent = likeCount;
-            heartBtn.classList.add('clicked');
-            
-            setTimeout(() => {
-                heartBtn.classList.remove('clicked');
-            }, 600);
-        });
+        // Load initial like count
+        async function loadLikeCount() {
+            try {
+                const response = await fetch('/api/likes');
+                const data = await response.json();
+                likeCountElement.textContent = data.likes;
+            } catch (error) {
+                console.error('Error loading likes:', error);
+                likeCountElement.textContent = '0'; // Fallback
+            }
+        }
+        
+        // Increment like count
+        async function incrementLikes() {
+            try {
+                const response = await fetch('/api/likes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data = await response.json();
+                likeCountElement.textContent = data.likes;
+                
+                // Add animation
+                heartBtn.classList.add('clicked');
+                setTimeout(() => {
+                    heartBtn.classList.remove('clicked');
+                }, 600);
+            } catch (error) {
+                console.error('Error incrementing likes:', error);
+                // Fallback to local increment
+                const currentCount = parseInt(likeCountElement.textContent) || 0;
+                likeCountElement.textContent = currentCount + 1;
+                
+                heartBtn.classList.add('clicked');
+                setTimeout(() => {
+                    heartBtn.classList.remove('clicked');
+                }, 600);
+            }
+        }
+        
+        // Event listeners
+        heartBtn.addEventListener('click', incrementLikes);
+        
+        // Load likes on page load
+        loadLikeCount();
         
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
