@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/likes.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
-}
